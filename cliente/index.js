@@ -1,5 +1,5 @@
 const express = require("express");
-const repository = require("./repository");
+// const repository = require("./repository");
 const mercadopago = require("mercadopago");
 const app = express();
 const port = process.env.PORT || 3000;
@@ -11,9 +11,9 @@ mercadopago.configure({
 
 app.use(express.json());
 
-app.get("/api/products", async (req, res) => {
-  res.send(await repository.read());
-});
+// app.get("/api/products", async (req, res) => {
+//   res.send(await scripts.read());
+// });
 
 app.post("/api/pay", async (req, res) => {
   const order = req.body;
@@ -71,7 +71,7 @@ app.get("/feedback", async (req, res) => {
   res.sendFile(require.resolve("./fe/index.html"));
 });
 
-app.use("/", express.static("fe"));
+app.use("/", express.static("cliente"));
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

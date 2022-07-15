@@ -5,11 +5,13 @@ let order = {
   items: [],
 };
 
+const API_URL = "http://localhost:3000/api/products";
+
 function add(productId, price) {
-  const product = productList.find((p) => p.id === productId);
+  const product = productList.find((p) => p._id === productId);
   product.stock--;
 
-  order.items.push(productList.find((p) => p.id === productId));
+  order.items.push(productList.find((p) => p._id === productId));
 
   console.log(productId, price);
   carrito.push(productId);
@@ -98,28 +100,13 @@ async function pay() {
   document.getElementById("checkout").innerHTML = `Carrito $${total}`;
 }
 
-//-----
-function displayProducts() {
-  document.getElementById("all-products").style.display = "block";
-  document.getElementById("order").style.display = "none";
-
-  const gym = productList.filter((p) => p.category === "gym");
-  displayProductsByType(gym, "product-cards-gym");
-
-  const car = productList.filter((p) => p.category === "car");
-  displayProductsByType(car, "product-cards-car");
-
-  const pc = productList.filter((p) => p.category === "pc");
-  displayProductsByType(pc, "product-cards-pc");
-}
-
 function displayProductsByType(productsByType, tagId) {
   let productsHTML = "";
   productsByType.forEach((p) => {
-    let buttonHTML = `<button class="button-add" onclick="add(${p.id}, ${p.price})">Agregar</button>`;
+    let buttonHTML = `<button class="button-add" onclick="add(${p._id}, ${p.price})">Agregar</button>`;
 
     if (p.stock <= 0) {
-      buttonHTML = `<button disabled class="button-add disabled" onclick="add(${p.id}, ${p.price})">Sin stock</button>`;
+      buttonHTML = `<button disabled class="button-add disabled" onclick="add(${p._id}, ${p.price})">Sin stock</button>`;
     }
 
     productsHTML += `<div class="product-container">
@@ -132,11 +119,32 @@ function displayProductsByType(productsByType, tagId) {
   document.getElementById(tagId).innerHTML = productsHTML;
 }
 
-async function fetchProducts() {
-  productList = await (await fetch("/api/products")).json();
-  displayProducts();
+const fetchProducts = () => {
+  fetch(API_URL)
+    .then((response) => response.json())
+    .then((data) => {
+      productList = data;
+      displayProducts(productList)
+    });
 }
 
-window.onload = async () => {
-  await fetchProducts();
-};
+const displayProducts = (productList) => {
+  document.getElementById("all-products").style.display = "block";
+  document.getElementById("order").style.display = "none";
+
+  const gym = productList.filter((p) => p.category === "Gym");
+  displayProductsByType(gym, "product-cards-gym");
+
+  const car = productList.filter((p) => p.category === "Car");
+  displayProductsByType(car, "product-cards-car");
+
+  const pc = productList.filter((p) => p.category === "Pc");
+  displayProductsByType(pc, "product-cards-pc");
+}
+
+fetchProducts()
+displayProducts()
+
+
+
+
